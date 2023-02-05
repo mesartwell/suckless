@@ -1,0 +1,22 @@
+# Patches to apply, in order, to dwm using quilt.
+config-mk.diff -p0
+dwm-systray-20200914-61bb8b2.diff -p0
+dwm-swallow-20200807-b2de9b0.diff -p0
+dwm-activetagindicatorbar-6.2.diff -p0
+dwm-actualfullscreen-20191112-cb3f58a.diff -p0
+dwm-fakefullscreen-20170508-ceac8c9.diff -p0
+dwm-rotatestack-20161021-ab9571b.diff -p0
+dwm-pertag-20200914-61bb8b2.diff -p0
+dwm-hide_vacant_tags-6.2.diff -p0
+dwm-tagallmon-6.2.diff -p0
+dwm-focusonclick-20171030-6aa8e37.diff -p0
+dwm-namedscratchpads-6.2.diff -p0
+dwm-attachasideandbelow-20200702-f04cac6.diff -p0
+dwm-rmaster-6.1.diff -p0
+dwm-deck-6.0.diff -p0
+dwm-deck-rmaster-6.1.diff -p0
+dwm-warp-6.2.diff -p0
+dwm-shiftview.diff -p0
+dwm-autoresize-6.1.diff -p0
+dwm-color-emoji.diff -p0
+myconfig.diff -p0

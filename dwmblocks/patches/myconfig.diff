@@ -1,0 +1,51 @@
+Index: upstream/blocks.def.h
+===================================================================
+--- upstream/blocks.def.h.orig
++++ upstream/blocks.def.h
+@@ -1,9 +1,11 @@
+ //Modify this file to change what commands output to your statusbar, and recompile using the make command.
+ static const Block blocks[] = {
+ 	/*Icon*/	/*Command*/		/*Update Interval*/	/*Update Signal*/
+-	{"Mem:", "free -h | awk '/^Mem/ { print $3\"/\"$2 }' | sed s/i//g",	30,		0},
+-
+-	{"", "date '+%b %d (%a) %I:%M%p'",					5,		0},
++	{"🧠", "cat /proc/loadavg | cut -d ' ' -f 1,2,3 | tr ' ' ','",	5,		0},
++	{"☀", "xbacklight | sed 's/\\..*//'",					3,		11},
++	{"", "volume",						3,		10},
++	{"", "battery",						5,		0},
++	{"🕒", "date '+%a/%d/%b [%R]'",			5,		0},
+ };
+ 
+ //sets delimeter between status commands. NULL character ('\0') means no delimeter.
+Index: upstream/Makefile
+===================================================================
+--- upstream/Makefile.orig
++++ upstream/Makefile
+@@ -1,11 +1,8 @@
+-PREFIX ?= /usr/local
++PREFIX ?= $(HOME)/.local
+ CC ?= cc
+ 
+-output: dwmblocks.c blocks.def.h blocks.h
+-	${CC} `pkg-config --cflags x11 --libs x11` dwmblocks.c -o dwmblocks
+-blocks.h:
+-	cp blocks.def.h $@
+-
++output: dwmblocks.c blocks.def.h
++	${CC} dwmblocks.c -o dwmblocks `pkg-config --cflags x11 --libs x11`
+ 
+ clean:
+ 	rm -f *.o *.gch dwmblocks
+Index: upstream/dwmblocks.c
+===================================================================
+--- upstream/dwmblocks.c.orig
++++ upstream/dwmblocks.c
+@@ -48,7 +48,7 @@ static void (*writestatus) () = pstdout;
+ #endif
+ 
+ 
+-#include "blocks.h"
++#include "blocks.def.h"
+ 
+ static char statusbar[LENGTH(blocks)][CMDLENGTH] = {0};
+ static char statusstr[2][STATUSLENGTH];

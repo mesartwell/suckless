@@ -1,0 +1,29 @@
+Index: upstream/config.def.h
+===================================================================
+--- upstream/config.def.h.orig
++++ upstream/config.def.h
+@@ -5,11 +5,12 @@
+  *
+  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
+  */
+-static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
++static char *font = "Hack Nerd Font:style=Regular:size=16";
+ /* Spare fonts */
+ static char *font2[] = {
+-/*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */
+-/*	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", */
++	"Noto Color Emoji:size=14",
++	"Symbola:stype=Regular:size=14",
++	"Noto Sans CJK JP Regular:style=Regular:size=16"
+ };
+ 
+ static int borderpx = 2;
+@@ -190,7 +191,7 @@ static uint forcemousemod = ShiftMask;
+  * Internal mouse shortcuts.
+  * Beware that overloading Button1 will disable the selection.
+  */
+-const unsigned int mousescrollincrement = 1;
++const unsigned int mousescrollincrement = 5;
+ static MouseShortcut mshortcuts[] = {
+ 	/* mask                 button   function        argument       release */
+ 	{ XK_ANY_MOD,           Button4, kscrollup,      {.i = mousescrollincrement},      0, /* !alt */ -1 },

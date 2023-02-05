@@ -1,0 +1,19 @@
+image: debian:latest
+
+before_script:
+  - apt-get update && apt install -y sudo git quilt make gcc build-essential
+  - useradd -ms /bin/bash test_user && echo "test_user:test_user" | chpasswd && adduser test_user sudo
+  - su --login test_user; whoami
+  - export PATH="$HOME/.local/bin:$PATH"
+    #- DEBIAN_FRONTEND=noninteractive apt install -y libxrandr-dev libxinerama-dev libxft-dev libxss-dev farbfeld
+
+after_script:
+  - echo "Done!"
+
+install:
+  script:
+    - bash -x install.sh --install_deps
+    #- bash -x install.sh --install_deps
+    - command -v dwm st slstatus >/dev/null
+  timeout: 10 minutes
+  retry: 0

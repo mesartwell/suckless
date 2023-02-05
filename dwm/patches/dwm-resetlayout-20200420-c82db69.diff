@@ -1,0 +1,52 @@
+Index: upstream/config.def.h
+===================================================================
+--- upstream/config.def.h.orig
++++ upstream/config.def.h
+@@ -79,6 +79,7 @@ static Key keys[] = {
+ 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
+ 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+ 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
++	{ MODKEY,                       XK_r,      resetlayout,    {0} },
+ 	{ MODKEY,                       XK_r,      reorganizetags, {0} },
+ 	{ MODKEY,                       XK_Return, zoom,           {0} },
+ 	{ MODKEY,                       XK_Tab,    view,           {0} },
+Index: upstream/dwm.c
+===================================================================
+--- upstream/dwm.c.orig
++++ upstream/dwm.c
+@@ -228,6 +228,7 @@ static void pop(Client *);
+ static void propertynotify(XEvent *e);
+ static void quit(const Arg *arg);
+ static Monitor *recttomon(int x, int y, int w, int h);
++static void resetlayout(const Arg *arg);
+ static void reorganizetags(const Arg *arg);
+ static void removesystrayicon(Client *i);
+ static void resize(Client *c, int x, int y, int w, int h, int interact);
+@@ -1257,6 +1258,16 @@ killclient(const Arg *arg)
+ }
+ 
+ void
++resetlayout(const Arg *arg)
++{
++	Arg default_layout = {.v = &layouts[0]};
++	Arg default_mfact = {.f = mfact + 1};
++
++	setlayout(&default_layout);
++	setmfact(&default_mfact);
++}
++
++void
+ reorganizetags(const Arg *arg) {
+ 	Client *c;
+ 	unsigned int occ, unocc, i;
+@@ -1591,6 +1602,10 @@ resizeclient(Client *c, int x, int y, in
+ 	c->oldw = c->w; c->w = wc.width = w;
+ 	c->oldh = c->h; c->h = wc.height = h;
+ 	wc.border_width = c->bw;
++
++	if ((nexttiled(c->mon->clients) == c) && !(nexttiled(c->next)))
++		resetlayout(NULL);
++
+ 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
+ 	configure(c);
+ 	XSync(dpy, False);

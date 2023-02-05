@@ -1,0 +1,121 @@
+From 3aca05f642469799086acbc243e173cfda527683 Mon Sep 17 00:00:00 2001
+From: aleks <aleks.stier@icloud.com>
+Date: Thu, 23 May 2019 22:39:13 +0200
+Subject: [PATCH] Enable swapping master- and stack-area
+
+Enables swapping the master- and stack area such that the master-client
+appears on the right and the stack-clients appear on the left.
+
+A variable and a toggle-function are introduced to achieve this
+behaviour which are set in the config.h:
+
+* The rmaster-variable can be set to 1 to make the right area the
+default master-area
+* The togglemaster-function can be used to swap the master- and
+stack-areas dynamically.
+---
+ config.def.h |  2 ++
+ dwm.c        | 23 ++++++++++++++++++++---
+ 2 files changed, 22 insertions(+), 3 deletions(-)
+
+Index: upstream/config.def.h
+===================================================================
+--- upstream/config.def.h.orig
++++ upstream/config.def.h
+@@ -3,6 +3,7 @@
+ /* appearance */
+ static const unsigned int borderpx  = 1;        /* border pixel of windows */
+ static const unsigned int snap      = 32;       /* snap pixel */
++static const int rmaster            = 1;        /* 1 means master-area is initially on the right */
+ static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
+ static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
+ static const unsigned int systrayspacing = 2;   /* systray spacing */
+@@ -95,6 +96,7 @@ static Key keys[] = {
+ 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+ 	{ MODKEY,                       XK_space,  setlayout,      {0} },
+ 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
++	{ MODKEY,                       XK_r,      togglermaster,  {0} },
+ 	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
+ 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
+ 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
+Index: upstream/dwm.c
+===================================================================
+--- upstream/dwm.c.orig
++++ upstream/dwm.c
+@@ -1,8 +1,7 @@
+ /* See LICENSE file for copyright and license details.
+  *
+  * dynamic window manager is designed like any other X client as well. It is
+- * driven through handling X events. In contrast to other X clients, a window
+- * manager selects for SubstructureRedirectMask on the root window, to receive
++ * driven through handling X events. In contrast to other X clients, a window * manager selects for SubstructureRedirectMask on the root window, to receive
+  * events about window (dis-)appearance. Only one X connection at a time is
+  * allowed to select for this event mask.
+  *
+@@ -151,6 +150,7 @@ struct Monitor {
+ 	unsigned int seltags;
+ 	unsigned int sellt;
+ 	unsigned int tagset[2];
++	int rmaster;
+ 	int showbar;
+ 	int topbar;
+ 	Client *clients;
+@@ -263,6 +263,7 @@ static void tagallmon(const Arg *arg);
+ static void tile(Monitor *);
+ static void togglebar(const Arg *arg);
+ static void togglefloating(const Arg *arg);
++static void togglermaster(const Arg *arg);
+ static void togglescratch(const Arg *arg);
+ static void togglefullscr(const Arg *arg);
+ static void toggletag(const Arg *arg);
+@@ -842,6 +843,7 @@ createmon(void)
+ 	m->tagset[0] = m->tagset[1] = 1;
+ 	m->mfact = mfact;
+ 	m->nmaster = nmaster;
++	m->rmaster = rmaster;
+ 	m->showbar = showbar;
+ 	m->topbar = topbar;
+ 	m->lt[0] = &layouts[0];
+@@ -2119,18 +2121,22 @@ tile(Monitor *m)
+ 		return;
+ 
+ 	if (n > m->nmaster)
+-		mw = m->nmaster ? m->ww * m->mfact : 0;
++		mw = m->nmaster
++			? m->ww * (m->rmaster ? 1.0 - m->mfact : m->mfact)
++			: 0;
+ 	else
+ 		mw = m->ww;
+ 	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+ 		if (i < m->nmaster) {
+ 			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+-			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
++			resize(c, m->rmaster ? m->wx + m->ww - mw : m->wx,
++			       m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
+ 			if (my + HEIGHT(c) < m->wh)
+ 				my += HEIGHT(c);
+ 		} else {
+ 			h = (m->wh - ty) / (n - i);
+-			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
++			resize(c, m->rmaster ? m->wx : m->wx + mw, m->wy + ty,
++			       m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
+ 			if (ty + HEIGHT(c) < m->wh)
+ 				ty += HEIGHT(c);
+ 		}
+@@ -2198,6 +2204,16 @@ togglescratch(const Arg *arg)
+ }
+ 
+ void
++togglermaster(const Arg *arg)
++{
++	selmon->rmaster = !selmon->rmaster;
++	/* now mfact represents the left factor */
++	selmon->mfact = 1.0 - selmon->mfact;
++	if (selmon->lt[selmon->sellt]->arrange)
++		arrange(selmon);
++}
++
++void
+ toggletag(const Arg *arg)
+ {
+ 	unsigned int newtags;

@@ -1,0 +1,5 @@
+.pc
+*.o
+*~
+*.rej
+config.h

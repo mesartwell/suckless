@@ -1,0 +1,2 @@
+# dwmblocks: patches to apply (in order) using quilt.
+myconfig.diff -p0

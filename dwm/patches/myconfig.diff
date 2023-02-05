@@ -1,0 +1,125 @@
+Index: upstream/config.def.h
+===================================================================
+--- upstream/config.def.h.orig
++++ upstream/config.def.h
+@@ -1,28 +1,29 @@
+ /* See LICENSE file for copyright and license details. */
+ 
+ /* appearance */
+-static const unsigned int borderpx  = 1;        /* border pixel of windows */
++static const unsigned int borderpx  = 7;        /* border pixel of windows */
+ static const unsigned int snap      = 32;       /* snap pixel */
+ static const int rmaster            = 1;        /* 1 means master-area is initially on the right */
+-static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
++static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */
+ static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
+ static const unsigned int systrayspacing = 2;   /* systray spacing */
+ static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
+ static const int showsystray        = 1;     /* 0 means no systray */
+ static const int showbar            = 1;        /* 0 means no bar */
+-static const int topbar             = 1;        /* 0 means bottom bar */
++static const int topbar             = 0;        /* 0 means bottom bar */
+ static const int focusonwheel       = 0;
+-static const char *fonts[]          = { "monospace:size=10" };
+-static const char dmenufont[]       = "monospace:size=10";
++static const char *fonts[]          = { "Hack Nerd Font:style=Regular:size=13", "Noto Color Emoji:size=10" };
++static const char dmenufont[]       = "Hack Nerd Font:style=Regular:size=14";
+ static const char col_gray1[]       = "#222222";
+ static const char col_gray2[]       = "#444444";
+ static const char col_gray3[]       = "#bbbbbb";
+ static const char col_gray4[]       = "#eeeeee";
+ static const char col_cyan[]        = "#005577";
++static const char col_red[]         = "#e80a02";
+ static const char *colors[][3]      = {
+ 	/*               fg         bg         border   */
+ 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
+-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
++	[SchemeSel]  = { col_gray4, col_cyan,  col_red  },
+ };
+ 
+ /* tagging */
+@@ -35,6 +36,7 @@ static const Rule rules[] = {
+ 	 */
+ 	/* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor  scratch key*/
+ 	{ NULL,      NULL,     "scratchpad",   0,         1,          1,           0,        -1 ,     's'},
++	{ NULL,      NULL,     "calculator",   0,         1,          1,           0,        -1 ,     'c'},
+ 	{ "Gimp",    NULL,     NULL,           0,         1,          0,           0,        -1 ,     0},
+ 	{ "Firefox", NULL,     NULL,           1 << 8,    0,          0,          -1,        -1 ,     0},
+ 	{ "St",      NULL,     NULL,           0,         0,          1,           0,        -1 ,     0},
+@@ -42,7 +44,7 @@ static const Rule rules[] = {
+ };
+ 
+ /* layout(s) */
+-static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
++static const float mfact     = 0.65; /* factor of master area size [0.05..0.95] */
+ static const int nmaster     = 1;    /* number of clients in master area */
+ static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+ 
+@@ -71,43 +73,46 @@ static const char *dmenucmd[] = { "dmenu
+ static const char *termcmd[]  = { "st", NULL };
+ 
+ /*First arg only serves to match against key in rules*/
+-static const char *scratchpadcmd[] = {"s", "st", "-t", "scratchpad", NULL};
++static const char *scratchpadcmd[] = {"s", "st", "-t", "scratchpad", "-e", "gotop", NULL};
++static const char *calccmd[] = {"c", "st", "-t", "calculator", "-g", "=60x20", "-e", "python3", "-iq", NULL};
+ 
++/* tip: use 'xev | grep keysm' to identify key names */
+ static Key keys[] = {
+ 	/* modifier                     key        function        argument */
+ 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+ 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+ 	{ MODKEY,                       XK_grave,  togglescratch,  {.v = scratchpadcmd } },
++	{ MODKEY,                       XK_equal,  togglescratch,  {.v = calccmd } },
+ 	{ MODKEY,                       XK_b,      togglebar,      {0} },
+ 	{ MODKEY|ShiftMask,             XK_j,      rotatestack,    {.i = +1 } },
+ 	{ MODKEY|ShiftMask,             XK_k,      rotatestack,    {.i = -1 } },
+ 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+ 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
+-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
+-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
+-	{ MODKEY,                       XK_i,      shiftview,      { .i = +1 } },
+-	{ MODKEY,                       XK_u,      shiftview,      { .i = -1 } },
+-	{ MODKEY,                       XK_Return, zoom,           {0} },
+-	{ MODKEY,                       XK_Tab,    view,           {0} },
++	{ MODKEY|ShiftMask,             XK_i,      incnmaster,     {.i = +1 } },
++	{ MODKEY|ShiftMask,             XK_d,      incnmaster,     {.i = -1 } },
++	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} }, /*resize master*/
++	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} }, /*""*/
++	{ MODKEY,                       XK_i,      shiftview,      { .i = +1 } }, /*cycle thru tags*/
++	{ MODKEY,                       XK_u,      shiftview,      { .i = -1 } }, /* "" */
++	{ MODKEY,                       XK_Return, zoom,           {0} }, /*make current client master */
++	{ MODKEY,                       XK_Tab,    view,           {0} }, /*cycle b/t last tag*/
+ 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
+-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
+-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+-	{ MODKEY,                       XK_c,      setlayout,      {.v = &layouts[3]} },
++	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} }, /*tiled(default*/
++	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} }, /*float*/
++	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} }, /*monocle*/
++	{ MODKEY,                       XK_c,      setlayout,      {.v = &layouts[3]} }, /*deck*/
+ 	{ MODKEY,                       XK_space,  setlayout,      {0} },
+ 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
+ 	{ MODKEY,                       XK_r,      togglermaster,  {0} },
+ 	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
+-	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
+-	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
+-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
+-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+-	{ MODKEY|Mod4Mask|ShiftMask,    XK_comma,  tagallmon,      {.i = +1 } },
+-	{ MODKEY|Mod4Mask|ShiftMask,    XK_period, tagallmon,      {.i = -1 } },
++	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } }, /*show all tags*/
++	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } }, /*view current client on all tags*/
++	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },  /*cycle thru monitors*/
++	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },  /*""*/
++	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },  /*move client to other monitor*/
++	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },  /*""*/
++	{ MODKEY|Mod4Mask|ShiftMask,    XK_comma,  tagallmon,      {.i = +1 } },  /*move all clients on tag to other monitor*/
++	{ MODKEY|Mod4Mask|ShiftMask,    XK_period, tagallmon,      {.i = -1 } },  /*""*/
+ 	TAGKEYS(                        XK_1,                      0)
+ 	TAGKEYS(                        XK_2,                      1)
+ 	TAGKEYS(                        XK_3,                      2)

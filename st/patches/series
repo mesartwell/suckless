@@ -1,0 +1,11 @@
+config-mk.diff -p0
+st-scrollback-20200419-72e3f6c.diff -p0
+st-scrollback-mouse-20191024-a2c479c.diff -p0
+st-scrollback-mouse-altscreen-20200416-5703aa0.diff -p0
+st-scrollback-mouse-increment-0.8.2.diff -p0
+st-solarized-both-0.8.4.diff -p0
+st-font2-20190416-ba72400.diff -p0
+st-workingdir-20200317-51e19ea.diff -p0
+st-no_bold_colors-20170623-b331da5.diff -p0
+st-clipboard-0.8.3.diff -p0
+myconfig.diff -p0

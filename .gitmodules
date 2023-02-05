@@ -1,0 +1,24 @@
+[submodule "dwm"]
+	path = dwm/upstream
+	url = git://git.suckless.org/dwm
+[submodule "dwmblocks"]
+	path = dwmblocks/upstream
+	url = git://github.com/torrinfail/dwmblocks
+[submodule "slstatus"]
+	path = slstatus/upstream
+	url = git://git.suckless.org/slstatus
+[submodule "st"]
+	path = st/upstream
+	url = git://git.suckless.org/st
+[submodule "slock"]
+	path = slock/upstream
+	url = git://git.suckless.org/slock
+[submodule "xssstate"]
+	path = xssstate/upstream
+	url = git://git.suckless.org/xssstate
+[submodule "dmenu"]
+	path = dmenu/upstream
+	url = git://git.suckless.org/dmenu
+[submodule "sent"]
+	path = sent/upstream
+	url = git://git.suckless.org/sent
